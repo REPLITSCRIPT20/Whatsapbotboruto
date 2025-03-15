@@ -1,0 +1,11 @@
+# Ignore authentication data
+/auth_info/
+
+# Node.js modules and logs
+/node_modules/
+/npm-debug.log
+/yarn-debug.log
+/yarn-error.log
+
+# Environment variables and other sensitive files
+.env
