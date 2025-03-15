@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Bot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        input, button, select {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+            width: 80%;
+            max-width: 400px;
+        }
+        button {
+            background-color: #25D366;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1ebe57;
+        }
+        #response {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>WhatsApp Bot</h2>
+
+    <h3>Step 1: Pair Your Number</h3>
+    <input type="text" id="number" placeholder="Enter phone number (without +)"><br>
+    <button onclick="pairNumber()">Get Pairing Code</button>
+    <p id="pairingResponse"></p>
+
+    <h3>Step 2: Choose Target Type</h3>
+    <select id="targetType">
+        <option value="contact">Contacts</option>
+        <option value="group">Groups</option>
+    </select>
+
+    <h3>Step 3: Enter Targets</h3>
+    <input type="text" id="targets" placeholder="Enter numbers or group IDs, separated by commas"><br>
+
+    <h3>Step 4: Enter Your Message</h3>
+    <input type="text" id="message" placeholder="Enter your message"><br>
+
+    <h3>Step 5: Enter Delay (Seconds)</h3>
+    <input type="number" id="delay" placeholder="Enter delay time in seconds"><br>
+
+    <button onclick="sendMessages()">Send Messages</button>
+    
+    <p id="response"></p>
+
+    <script>
+        async function pairNumber() {
+            const number = document.getElementById("number").value;
+            if (!number) {
+                document.getElementById("pairingResponse").innerText = "Please enter your phone number.";
+                return;
+            }
+
+            const response = await fetch("/pair", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ number })
+            });
+
+            const result = await response.json();
+            document.getElementById("pairingResponse").innerText = result.success || result.error;
+        }
+
+        async function sendMessages() {
+            const targets = document.getElementById("targets").value.split(",");
+            const message = document.getElementById("message").value;
+            const delay = document.getElementById("delay").value || 0;
+
+            if (!targets.length || !message) {
+                document.getElementById("response").innerText = "Please enter targets and message.";
+                return;
+            }
+
+            const response = await fetch("/send-message", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ targets, message, delay })
+            });
+
+            const result = await response.json();
+            document.getElementById("response").innerText = result.success || result.error;
+        }
+    </script>
+</body>
+</html>
